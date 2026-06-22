@@ -1,3 +1,4 @@
 .playwright-cli/
 .wrangler/
+output/
 test-site.mjs
