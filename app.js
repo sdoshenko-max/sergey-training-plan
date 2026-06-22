@@ -1040,7 +1040,10 @@
         const exerciseId = `${dayId}-ex${index + 1}`;
         const pumpClass = item.pump ? " is-pump" : "";
         const pumpBadge = item.pump
-          ? '<span class="exercise-badge" aria-label="Памп-упражнение">памп</span>'
+          ? '<span class="exercise-badge" aria-label="Памп-упражнение">памп 🔥</span>'
+          : "";
+        const pumpSparks = item.pump
+          ? '<span class="pump-sparks" aria-hidden="true"><span>🔥</span><span>💪</span><span>✨</span></span>'
           : "";
 
         return `
@@ -1049,6 +1052,7 @@
               <span class="exercise-label">
                 <span class="exercise-name">${item.name}</span>
                 ${pumpBadge}
+                ${pumpSparks}
               </span>
               <span class="exercise-sets">${item.sets}</span>
             </button>
@@ -1102,9 +1106,34 @@
     `;
   }
 
+  const PANEL_CLOSE_TIMEOUT_MS = 180;
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const panelTimers = new WeakMap();
+
+  function clearPanelTimer(panel) {
+    const timer = panelTimers.get(panel);
+
+    if (timer) {
+      window.clearTimeout(timer);
+      panelTimers.delete(panel);
+    }
+  }
+
+  function closePanelNow(panel) {
+    if (!panel) {
+      return;
+    }
+
+    clearPanelTimer(panel);
+    panel.classList.remove("is-open", "is-closing");
+    panel.hidden = true;
+    panel.style.height = "0px";
+  }
 
   function finishPanelTransition(panel) {
+    clearPanelTimer(panel);
+    panel.classList.remove("is-closing");
+
     if (panel.classList.contains("is-open")) {
       panel.style.height = "auto";
       return;
@@ -1114,24 +1143,38 @@
     panel.style.height = "0px";
   }
 
+  function schedulePanelFinish(panel) {
+    clearPanelTimer(panel);
+    panelTimers.set(
+      panel,
+      window.setTimeout(() => {
+        finishPanelTransition(panel);
+      }, PANEL_CLOSE_TIMEOUT_MS),
+    );
+  }
+
   function setPanelOpen(panel, isOpen) {
     if (!panel) {
       return;
     }
 
+    clearPanelTimer(panel);
+
     if (isOpen && !panel.hidden && panel.classList.contains("is-open")) {
+      panel.classList.remove("is-closing");
       panel.style.height = "auto";
       return;
     }
 
     if (!isOpen && panel.hidden) {
-      panel.classList.toggle("is-open", false);
+      panel.classList.remove("is-open", "is-closing");
       panel.style.height = "0px";
       return;
     }
 
     if (reducedMotion.matches) {
       panel.classList.toggle("is-open", isOpen);
+      panel.classList.toggle("is-closing", false);
       panel.hidden = !isOpen;
       panel.style.height = isOpen ? "auto" : "0px";
       return;
@@ -1139,7 +1182,8 @@
 
     if (isOpen) {
       panel.hidden = false;
-      panel.classList.toggle("is-open", true);
+      panel.classList.remove("is-closing");
+      panel.classList.add("is-open");
       panel.style.height = "0px";
 
       requestAnimationFrame(() => {
@@ -1153,7 +1197,19 @@
 
     requestAnimationFrame(() => {
       panel.classList.toggle("is-open", false);
+      panel.classList.toggle("is-closing", true);
       panel.style.height = "0px";
+      schedulePanelFinish(panel);
+    });
+  }
+
+  function closeNestedExercises(dayPanel) {
+    dayPanel.querySelectorAll(".exercise-toggle[aria-expanded='true']").forEach((toggle) => {
+      const panel = dayPanel.querySelector(`[data-exercise-panel="${toggle.dataset.exercise}"]`);
+
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.closest(".exercise-item")?.classList.remove("is-active");
+      closePanelNow(panel);
     });
   }
 
@@ -1180,6 +1236,11 @@
 
       panels.forEach((panel) => {
         const isActive = Boolean(day) && panel.dataset.panel === day;
+
+        if (!isActive) {
+          closeNestedExercises(panel);
+        }
+
         setPanelOpen(panel, isActive);
       });
     }
