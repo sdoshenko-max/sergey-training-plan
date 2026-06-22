@@ -321,6 +321,27 @@ h1 {
   color: var(--ink);
 }
 
+.technique-details {
+  display: grid;
+  gap: 8px;
+}
+
+.technique-details p {
+  padding-top: 0;
+}
+
+.technique-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.technique-list li {
+  padding-left: 2px;
+}
+
 [hidden] {
   display: none !important;
 }
