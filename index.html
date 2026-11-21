@@ -3,18 +3,39 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>План на 3 месяца</title>
+    <title>План тренировок Сергея — 5 дней</title>
+    <meta name="description" content="Пятидневный план на массу: фотографии тренажёров, подходы, повторения и техника. Зал в 12:00, футбол по понедельникам и четвергам в 19:00.">
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=20260622-pump-polish">
+    <link rel="stylesheet" href="styles.css?v=20261121-gym-photos">
   </head>
   <body>
     <div class="site-shell">
       <main>
         <h1>План на 3 месяца</h1>
+        <div class="plan-overview">
+          <p class="plan-schedule">Зал пн–пт в <strong>12:00</strong> · Футбол пн и чт в <strong>19:00</strong></p>
+          <p id="plan-period" class="plan-period"></p>
+        </div>
+        <details class="plan-rules">
+          <summary>Нагрузка и прогресс</summary>
+          <ul>
+            <li>Указаны рабочие подходы. Перед тренировкой разомнись, перед первым тяжёлым упражнением сделай 2–3 разминочных подхода.</li>
+            <li>Выбирай вес, с которым остаётся 2–3 повтора в запасе при хорошей технике.</li>
+            <li>Достиг верхней границы повторений во всех подходах с тем же запасом — добавь минимальный доступный вес на следующей тренировке.</li>
+            <li>6-я и 12-я недели облегчённые: число подходов в плане уже уменьшено.</li>
+            <li>После четвергового футбола оцени восстановление ног. Если на разминке они заметно слабее или сильно болят мышцы, сократи пятничный объём примерно вдвое и убери румынскую тягу. При острой или суставной боли пропусти болезненное упражнение.</li>
+          </ul>
+        </details>
+        <nav class="week-navigation" aria-label="Переход к неделе">
+          <label for="week-select">Перейти к неделе</label>
+          <select id="week-select"></select>
+        </nav>
         <section id="plan" class="month-plan" aria-label="План тренировок на 3 месяца"></section>
+        <noscript>Для раскрытия дней и упражнений включи JavaScript в браузере.</noscript>
       </main>
     </div>
 
-    <script src="app.js?v=20260622-pump-polish"></script>
+    <script src="plan-data.js?v=20261121-gym-photos"></script>
+    <script src="app.js?v=20261121-gym-photos"></script>
   </body>
 </html>
